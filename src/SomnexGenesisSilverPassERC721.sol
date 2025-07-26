@@ -63,5 +63,9 @@ contract SomnexGenesisSilverPassERC721 is ERC721Enumerable {
     function maxSupply() public view returns (uint256) {
         return passManager.getMaxSupply(PASS_TYPE);
     }
+
+    function _baseURI() internal pure override returns (string memory) {
+        return "ipfs://bafkreiajolqvg6kofe3wzjvvvsbelq2c3yu73k4c7h6othvmtjvgtba34e";
+    }
     
 }

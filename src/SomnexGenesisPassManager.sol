@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
  * @title SomnexGenesisPassManager
@@ -27,12 +28,12 @@ contract SomnexGenesisPassManager is Ownable2Step {
     /**
      * @dev Emitted when mint price is updated for a pass type
      */
-    event MintPriceUpdated(uint8 indexed passType, uint256 oldPrice, uint256 newPrice);
+    event MintPriceUpdated(uint8 indexed passType, uint256 newPrice);
 
     /**
      * @dev Emitted when max supply is updated for a pass type
      */
-    event MaxSupplyUpdated(uint8 indexed passType, uint256 oldSupply, uint256 newSupply);
+    event MaxSupplyUpdated(uint8 indexed passType, uint256 newSupply);
 
     /**
      * @dev Initializes the contract with default mint parameters
@@ -81,16 +82,15 @@ contract SomnexGenesisPassManager is Ownable2Step {
         }
         return mintParams_;
     }
-
+    
     /**
      * @dev Updates the mint price for a specific pass type
      * @param passType The type of pass (0 = Silver, 1 = Gold, 2 = Platinum)
      * @param newPrice The new mint price in wei
      */
     function setMintPrice(uint8 passType, uint256 newPrice) external onlyOwner {
-        uint256 oldPrice = _mintParams[passType].price;
         _mintParams[passType].price = newPrice;
-        emit MintPriceUpdated(passType, oldPrice, newPrice);
+        emit MintPriceUpdated(passType, newPrice);
     }
 
     /**
@@ -99,8 +99,7 @@ contract SomnexGenesisPassManager is Ownable2Step {
      * @param newSupply The new max supply
      */
     function setMaxSupply(uint8 passType, uint256 newSupply) external onlyOwner {
-        uint256 oldSupply = _mintParams[passType].maxSupply;
         _mintParams[passType].maxSupply = newSupply;
-        emit MaxSupplyUpdated(passType, oldSupply, newSupply);
+        emit MaxSupplyUpdated(passType, newSupply);
     }
 }
