@@ -23,18 +23,7 @@ contract SomnexGenesisPlatinumPassERC721 is ERC721Enumerable {
         passManager = SomnexGenesisPassManager(_passManager);
     }
 
-    function mint(uint256 tokenId) public virtual {
-        require(totalSupply() < passManager.getMaxSupply(PASS_TYPE), "Max supply reached");
-        require(tokenId > 0 && tokenId <= passManager.getMaxSupply(PASS_TYPE), "Token ID invalid");
-        require(!exists(tokenId), "Token already exists");
-        
-        // Transfer WETH from the caller's account directly to the team wallet
-        require(weth.transferFrom(msg.sender, team, passManager.getMintPrice(PASS_TYPE)), "WETH transfer failed");
-        
-        _mint(msg.sender, tokenId);
-    }
-
-    function buy(uint256 amount) public virtual {
+    function buy(uint256 amount, address to) public virtual {
         uint256 currentSupply = totalSupply();
         uint256 _maxSupply = passManager.getMaxSupply(PASS_TYPE);
         require(currentSupply + amount <= _maxSupply, "Purchase exceeds max supply");
@@ -51,7 +40,7 @@ contract SomnexGenesisPlatinumPassERC721 is ERC721Enumerable {
             uint256 newTokenId = currentSupply + i + 1; // Start from current supply + 1
             require(newTokenId > 0 && newTokenId <= _maxSupply, "Token ID invalid");
             require(!exists(newTokenId), "Token already exists");
-            _mint(msg.sender, newTokenId);
+            _mint(to, newTokenId);
         }
     }
     
