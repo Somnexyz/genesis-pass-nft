@@ -33,10 +33,31 @@ contract SomnexGenesisSilverPassERC721 is ERC721Enumerable {
         
         _mint(msg.sender, tokenId);
     }
+
+    function buy(uint256 amount) public virtual {
+        uint256 currentSupply = totalSupply();
+        uint256 _maxSupply = passManager.getMaxSupply(PASS_TYPE);
+        require(currentSupply + amount <= _maxSupply, "Purchase exceeds max supply");
+        require(amount > 0, "Purchase amount must be greater than zero");
+        
+        uint256 price = passManager.getMintPrice(PASS_TYPE);
+        uint256 totalPrice = price * amount;
+        
+        // Transfer WETH from the caller's account directly to the team wallet
+        require(weth.transferFrom(msg.sender, team, totalPrice), "WETH transfer failed");
+        
+        // Mint the specified amount of NFTs to the buyer
+        for (uint256 i = 0; i < amount; i++) {
+            uint256 newTokenId = currentSupply + i + 1; // Start from current supply + 1
+            require(newTokenId > 0 && newTokenId <= _maxSupply, "Token ID invalid");
+            require(!exists(newTokenId), "Token already exists");
+            _mint(msg.sender, newTokenId);
+        }
+    }
     
     // Check if the specified tokenId already exists
     function exists(uint256 tokenId) public view returns (bool) {
-        return ownerOf(tokenId) != address(0);
+        return _ownerOf(tokenId) != address(0);
     }
 
     function maxSupply() public view returns (uint256) {
