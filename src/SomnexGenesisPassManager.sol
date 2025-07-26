@@ -22,6 +22,7 @@ contract SomnexGenesisPassManager is Ownable2Step {
 
     // Mapping from pass type to its minting parameters
     mapping(uint8 => MintParams) private _mintParams;
+    uint256 public typeCount;
 
     /**
      * @dev Emitted when mint price is updated for a pass type
@@ -36,7 +37,7 @@ contract SomnexGenesisPassManager is Ownable2Step {
     /**
      * @dev Initializes the contract with default mint parameters
      */
-    constructor() Context() Ownable(msg.sender) {
+    constructor() Ownable(msg.sender) {
         // Set default values for Silver pass
         _mintParams[PASS_TYPE_SILVER] = MintParams({
             price: 0.01 ether,
@@ -54,6 +55,7 @@ contract SomnexGenesisPassManager is Ownable2Step {
             price: 0.03 ether,
             maxSupply: 2000
         });
+        typeCount = 3; // Total number of pass types
     }
 
     /**
@@ -70,6 +72,14 @@ contract SomnexGenesisPassManager is Ownable2Step {
      */
     function getMaxSupply(uint8 passType) public view returns (uint256) {
         return _mintParams[passType].maxSupply;
+    }
+
+    function getAllTypesMintParams() public view returns (MintParams[] memory) {
+        MintParams[] memory mintParams_ = new MintParams[](typeCount);
+        for (uint256 i = 0; i < typeCount; i++) {
+            mintParams_[i] = _mintParams[uint8(i)];
+        }
+        return mintParams_;
     }
 
     /**
