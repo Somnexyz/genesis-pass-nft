@@ -11,7 +11,7 @@ import "./SomnexGenesisPassManager.sol"; // 引入管理合约
 contract SomnexGenesisSilverPassERC721 is ERC721Enumerable {
     IERC20 public weth; // WETH token address
     address public team; // Team wallet address
-    uint8 private constant PASS_TYPE = 0; // 0 = Silver
+    uint8 public constant PASS_TYPE = 0; // 0 = Silver
     SomnexGenesisPassManager private passManager;
     
     // Initialize the pass manager in constructor

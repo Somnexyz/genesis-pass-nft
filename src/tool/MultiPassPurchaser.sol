@@ -49,7 +49,7 @@ contract MultiPassPurchaser {
             totalCost += price * purchase.amount;
         }
 
-        weth.transferFrom(msg.sender, address(this), totalCost);
+        require(weth.transferFrom(msg.sender, address(this), totalCost), "Failed to transfer WETH");
         
         // Execute all purchases
         for (uint256 i = 0; i < purchases.length; i++) {
