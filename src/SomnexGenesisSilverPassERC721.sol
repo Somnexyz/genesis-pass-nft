@@ -25,11 +25,10 @@ contract SomnexGenesisSilverPassERC721 is ERC721Enumerable {
 
     function buy(uint256 amount, address to) public virtual {
         uint256 currentSupply = totalSupply();
-        uint256 _maxSupply = passManager.getMaxSupply(PASS_TYPE);
+        (uint256 price, uint256 _maxSupply) = passManager.getParam(PASS_TYPE);
         require(currentSupply + amount <= _maxSupply, "Purchase exceeds max supply");
         require(amount > 0, "Purchase amount must be greater than zero");
         
-        uint256 price = passManager.getMintPrice(PASS_TYPE);
         uint256 totalPrice = price * amount;
         
         // Transfer WETH from the caller's account directly to the team wallet
