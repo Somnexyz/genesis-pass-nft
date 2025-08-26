@@ -42,18 +42,13 @@ contract SomnexGenesisPlatinumPassERC721 is ERC721Enumerable, ReentrancyGuard {
             _mint(to, newTokenId);
         }
     }
-    
-    // Check if the specified tokenId already exists
-    function exists(uint256 tokenId) public view returns (bool) {
-        return _ownerOf(tokenId) != address(0);
-    }
 
     function maxSupply() public view returns (uint256) {
         return passManager.getMaxSupply(PASS_TYPE);
     }
-
-    function _baseURI() internal pure override returns (string memory) {
+    
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_ownerOf(tokenId) != address(0), "ERC721Metadata: URI query for nonexistent token");
         return "ipfs://bafkreifwle5oqwjyeukdn5rs2pe5mijq7yq572l6bbddsgus3rjw3xlwqa";
     }
-    
 }
