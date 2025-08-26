@@ -7,9 +7,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC1155.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "./SomnexGenesisPassManager.sol"; // 引入管理合约
-
-contract SomnexGenesisGoldPassERC721 is ERC721Enumerable {
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./SomnexGenesisPassManager.sol";
+contract SomnexGenesisGoldPassERC721 is ERC721Enumerable, ReentrancyGuard {
     IERC20 public weth; // WETH token address
     address public team; // Team wallet address
     uint8 public constant PASS_TYPE = 1; // 1 = Gold
@@ -24,7 +24,7 @@ contract SomnexGenesisGoldPassERC721 is ERC721Enumerable {
         passManager = SomnexGenesisPassManager(_passManager);
     }
 
-    function buy(uint256 amount, address to) public virtual {
+    function buy(uint256 amount, address to) public nonReentrant {
         uint256 currentSupply = totalSupply();
         uint256 _maxSupply = passManager.getMaxSupply(PASS_TYPE);
         require(currentSupply + amount <= _maxSupply, "Purchase exceeds max supply");
@@ -40,7 +40,6 @@ contract SomnexGenesisGoldPassERC721 is ERC721Enumerable {
         for (uint256 i = 0; i < amount; i++) {
             uint256 newTokenId = currentSupply + i + 1; // Start from current supply + 1
             require(newTokenId > 0 && newTokenId <= _maxSupply, "Token ID invalid");
-            require(!exists(newTokenId), "Token already exists");
             _mint(to, newTokenId);
         }
     }
