@@ -75,6 +75,11 @@ contract SomnexGenesisPassManager is Ownable2Step {
         return _mintParams[passType].maxSupply;
     }
 
+    function getParam(uint8 passType) public view returns (uint256 price, uint256 maxSupply) {
+        MintParams memory params = _mintParams[passType];
+        return (params.price, params.maxSupply);
+    }
+
     function getAllTypesMintParams() public view returns (MintParams[] memory) {
         MintParams[] memory mintParams_ = new MintParams[](typeCount);
         for (uint256 i = 0; i < typeCount; i++) {
@@ -89,6 +94,7 @@ contract SomnexGenesisPassManager is Ownable2Step {
      * @param newPrice The new mint price in wei
      */
     function setMintPrice(uint8 passType, uint256 newPrice) external onlyOwner {
+        require(passType < typeCount, "Invalid pass type");
         _mintParams[passType].price = newPrice;
         emit MintPriceUpdated(passType, newPrice);
     }
@@ -99,7 +105,31 @@ contract SomnexGenesisPassManager is Ownable2Step {
      * @param newSupply The new max supply
      */
     function setMaxSupply(uint8 passType, uint256 newSupply) external onlyOwner {
+        require(passType < typeCount, "Invalid pass type");
         _mintParams[passType].maxSupply = newSupply;
         emit MaxSupplyUpdated(passType, newSupply);
+    }
+
+    /**
+     * @dev Sets the mint parameters for a specific pass type or adds a new type if it doesn't exist yet
+     * @param passType The type of pass (0 = Silver, 1 = Gold, 2 = Platinum)
+     * @param price The mint price in wei
+     * @param maxSupply  The max supply
+     */
+    function setParam(
+        uint8 passType,
+        uint256 price,
+        uint256 maxSupply
+    ) external onlyOwner {
+        require(passType <= typeCount, "Invalid pass type");
+        if (passType == typeCount) {
+            typeCount++;
+        }
+        _mintParams[passType] = MintParams({
+            price: price,
+            maxSupply: maxSupply
+        });
+        emit MintPriceUpdated(passType, price);
+        emit MaxSupplyUpdated(passType, maxSupply);
     }
 }
