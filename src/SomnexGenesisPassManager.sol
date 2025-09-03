@@ -24,6 +24,7 @@ contract SomnexGenesisPassManager is Ownable2Step {
     // Mapping from pass type to its minting parameters
     mapping(uint8 => MintParams) private _mintParams;
     uint256 public typeCount;
+    address private _team; // Team wallet address
 
     /**
      * @dev Emitted when mint price is updated for a pass type
@@ -38,7 +39,7 @@ contract SomnexGenesisPassManager is Ownable2Step {
     /**
      * @dev Initializes the contract with default mint parameters
      */
-    constructor() Ownable(msg.sender) {
+    constructor(address initTeam) Ownable(msg.sender) {
         // Set default values for Silver pass
         _mintParams[PASS_TYPE_SILVER] = MintParams({
             price: 0.01 ether,
@@ -57,6 +58,16 @@ contract SomnexGenesisPassManager is Ownable2Step {
             maxSupply: 2000
         });
         typeCount = 3; // Total number of pass types
+        _team = initTeam;
+    }
+
+    function team() public view returns (address) {
+        return _team;
+    }
+
+    function setTeam(address newTeam) public onlyOwner {
+        require(newTeam != address(0), "Team address cannot be zero");
+        _team = newTeam;
     }
 
     /**

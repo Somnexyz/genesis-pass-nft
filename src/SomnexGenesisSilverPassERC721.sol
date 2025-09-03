@@ -11,16 +11,13 @@ import "./SomnexGenesisPassManager.sol";
 
 contract SomnexGenesisSilverPassERC721 is ERC721Enumerable, ReentrancyGuard {
     IERC20 public weth; // WETH token address
-    address public team; // Team wallet address
     uint8 public constant PASS_TYPE = 0; // 0 = Silver
     SomnexGenesisPassManager private passManager;
     
     // Initialize the pass manager in constructor
-    constructor(address _weth, address _team, address _passManager) ERC721("Somnex Genesis Silver Pass NFT", "SSPT") {
+    constructor(address _weth,  address _passManager) ERC721("Somnex Genesis Silver Pass NFT", "SSPT") {
         require(_weth != address(0), "WETH address cannot be zero");
-        require(_team != address(0), "Team wallet address cannot be zero");
         weth = IERC20(_weth);
-        team = _team;
         passManager = SomnexGenesisPassManager(_passManager);
     }
 
@@ -33,7 +30,7 @@ contract SomnexGenesisSilverPassERC721 is ERC721Enumerable, ReentrancyGuard {
         uint256 totalPrice = price * amount;
         
         // Transfer WETH from the caller's account directly to the team wallet
-        require(weth.transferFrom(msg.sender, team, totalPrice), "WETH transfer failed");
+        require(weth.transferFrom(msg.sender, passManager.team(), totalPrice), "WETH transfer failed");
         
         // Mint the specified amount of NFTs to the buyer
         for (uint256 i = 0; i < amount; i++) {
