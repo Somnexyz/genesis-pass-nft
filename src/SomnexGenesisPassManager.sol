@@ -17,11 +17,6 @@ contract SomnexGenesisPassManager is Ownable2Step {
         uint256 maxSupply;
     }
 
-    // Constants for different pass types
-    uint8 public constant PASS_TYPE_SILVER = 0;
-    uint8 public constant PASS_TYPE_GOLD = 1;
-    uint8 public constant PASS_TYPE_PLATINUM = 2;
-
     // Mapping from pass type to its minting parameters
     mapping(uint8 => MintParams) private _mintParams;
     uint256 public typeCount;
@@ -38,27 +33,28 @@ contract SomnexGenesisPassManager is Ownable2Step {
     event MaxSupplyUpdated(uint8 indexed passType, uint256 newSupply);
 
     /**
-     * @dev Initializes the contract with default mint parameters
+     * @dev Initializes the contract with provided mint parameters
+     * @param initTeam Team wallet address
+     * @param passTypes Array of pass types (0 = Silver, 1 = Gold, 2 = Platinum, etc.)
+     * @param params Array of MintParams structs corresponding to pass types
      */
-    constructor(address initTeam) Ownable(msg.sender) {
-        // Set default values for Silver pass
-        _mintParams[PASS_TYPE_SILVER] = MintParams({
-            price: 0.01 ether,
-            maxSupply: 5000
-        });
-
-        // Set default values for Gold pass
-        _mintParams[PASS_TYPE_GOLD] = MintParams({
-            price: 0.018 ether,
-            maxSupply: 10000
-        });
-
-        // Set default values for Platinum pass
-        _mintParams[PASS_TYPE_PLATINUM] = MintParams({
-            price: 0.03 ether,
-            maxSupply: 2000
-        });
-        typeCount = 3; // Total number of pass types
+    constructor(
+        address initTeam,
+        uint8[] memory passTypes,
+        MintParams[] memory params
+    ) Ownable(msg.sender) {
+        require(passTypes.length == params.length, 
+            "Arrays length mismatch");
+        require(passTypes.length > 0, "At least one pass type required");
+        
+        for (uint256 i = 0; i < passTypes.length; i++) {
+            uint8 passType = passTypes[i];
+            _mintParams[passType] = MintParams({
+                price: params[i].price,
+                maxSupply: params[i].maxSupply
+            });
+        }
+        typeCount = passTypes.length;
         _team = initTeam;
     }
 
