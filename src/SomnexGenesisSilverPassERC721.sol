@@ -10,14 +10,14 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./SomnexGenesisPassManager.sol";
 
 contract SomnexGenesisSilverPassERC721 is ERC721Enumerable, ReentrancyGuard {
-    IERC20 public weth; // WETH token address
+    IERC20 public paymentToken; // Payment token address
     uint8 public constant PASS_TYPE = 0; // 0 = Silver
     SomnexGenesisPassManager private passManager;
     
     // Initialize the pass manager in constructor
-    constructor(address _weth,  address _passManager) ERC721("Somnex Genesis Silver Pass NFT", "SSPT") {
-        require(_weth != address(0), "WETH address cannot be zero");
-        weth = IERC20(_weth);
+    constructor(address _paymentToken,  address _passManager) ERC721("Somnex Genesis Silver Pass NFT", "SSPT") {
+        require(_paymentToken != address(0), "Payment token address cannot be zero");
+        paymentToken = IERC20(_paymentToken);
         passManager = SomnexGenesisPassManager(_passManager);
     }
 
@@ -29,8 +29,8 @@ contract SomnexGenesisSilverPassERC721 is ERC721Enumerable, ReentrancyGuard {
         
         uint256 totalPrice = price * amount;
         
-        // Transfer WETH from the caller's account directly to the team wallet
-        require(weth.transferFrom(msg.sender, passManager.team(), totalPrice), "WETH transfer failed");
+        // Transfer payment token from the caller's account directly to the team wallet
+        require(paymentToken.transferFrom(msg.sender, passManager.team(), totalPrice), "Payment token transfer failed");
         
         // Mint the specified amount of NFTs to the buyer
         for (uint256 i = 0; i < amount; i++) {

@@ -7,7 +7,7 @@ import "../src/SomnexGenesisPassManager.sol";
 contract SomnexGenesisPlatinumPassERC721Test is Test {
     SomnexGenesisPlatinumPassERC721 public platinumPass;
     SomnexGenesisPassManager public passManager;
-    address public wethAddress = address(0x123);
+    address public paymentTokenAddress = address(0x123);
     address public teamWallet = address(0x456);
     address public user = address(0x789);
 
@@ -16,7 +16,7 @@ contract SomnexGenesisPlatinumPassERC721Test is Test {
         passManager = new SomnexGenesisPassManager();
         
         // Deploy the Platinum Pass contract with the pass manager
-        platinumPass = new SomnexGenesisPlatinumPassERC721(wethAddress, teamWallet, address(passManager));
+        platinumPass = new SomnexGenesisPlatinumPassERC721(paymentTokenAddress, teamWallet, address(passManager));
         
         // Fund the user account with some WETH (mock)
         vm.deal(user, 10 ether);
@@ -89,14 +89,14 @@ contract SomnexGenesisPlatinumPassERC721Test is Test {
         
         // Create a new instance of the Platinum Pass contract with a different pass manager
         SomnexGenesisPassManager newPassManager = new SomnexGenesisPassManager();
-        SomnexGenesisPlatinumPassERC721 newPlatinumPass = new SomnexGenesisPlatinumPassERC721(
-            address(0xdead), // Invalid WETH address
+        newPlatinumPass = new SomnexGenesisPlatinumPassERC721(
+            address(0xdead), // Invalid payment token address
             teamWallet,
             address(newPassManager)
         );
         
         // Attempt to mint should fail because the WETH transfer will fail
-        vm.expectRevert("WETH transfer failed");
+        vm.expectRevert("Payment token transfer failed");
         newPlatinumPass.mint(tokenId);
     }
 }

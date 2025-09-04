@@ -19,12 +19,12 @@ contract MultiPassPurchaser {
     /**
      * @dev Multi-buy function to purchase multiple NFT types in one transaction
      * @param purchases Array of purchase parameters
-     * @param weth Address of the WETH token
+     * @param paymentToken Address of the payment token
      * @param passManager Address of the pass manager contract
      */
     function multiBuy(
         PurchaseParams[] calldata purchases,
-        IERC20 weth,
+        IERC20 paymentToken,
         SomnexGenesisPassManager passManager,
         address to
     ) public {
@@ -49,13 +49,13 @@ contract MultiPassPurchaser {
             totalCost += price * purchase.amount;
         }
 
-        require(weth.transferFrom(msg.sender, address(this), totalCost), "Failed to transfer WETH");
+        require(paymentToken.transferFrom(msg.sender, address(this), totalCost), "Failed to transfer payment token");
         
         // Execute all purchases
         for (uint256 i = 0; i < purchases.length; i++) {
             PurchaseParams calldata purchase = purchases[i];
             
-            weth.approve(purchase.nftContract, purchase.amount * mintPrices[i]);
+            paymentToken.approve(purchase.nftContract, purchase.amount * mintPrices[i]);
             // Call the buy function on the specific NFT contract
             (bool success, ) = purchase.nftContract.call(
                 abi.encodeWithSignature("buy(uint256,address)", purchase.amount, to)

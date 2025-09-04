@@ -7,7 +7,7 @@ import "../src/SomnexGenesisPassManager.sol";
 contract SomnexGenesisSilverPassERC721Test is Test {
     SomnexGenesisSilverPassERC721 public silverPass;
     SomnexGenesisPassManager public passManager;
-    address public wethAddress = address(0x123);
+    address public paymentTokenAddress = address(0x123);
     address public teamWallet = address(0x456);
     address public user = address(0x789);
 
@@ -16,7 +16,7 @@ contract SomnexGenesisSilverPassERC721Test is Test {
         passManager = new SomnexGenesisPassManager();
         
         // Deploy the Silver Pass contract with the pass manager
-        silverPass = new SomnexGenesisSilverPassERC721(wethAddress, teamWallet, address(passManager));
+        silverPass = new SomnexGenesisSilverPassERC721(paymentTokenAddress, teamWallet, address(passManager));
         
         // Fund the user account with some WETH (mock)
         vm.deal(user, 10 ether);
@@ -90,8 +90,8 @@ contract SomnexGenesisSilverPassERC721Test is Test {
         
         // Create a new instance of the Silver Pass contract with a different pass manager
         SomnexGenesisPassManager newPassManager = new SomnexGenesisPassManager();
-        SomnexGenesisSilverPassERC721 newSilverPass = new SomnexGenesisSilverPassERC721(
-            address(0xdead), // Invalid WETH address
+        newSilverPass = new SomnexGenesisSilverPassERC721(
+            address(0xdead), // Invalid payment token address
             teamWallet,
             address(newPassManager)
         );

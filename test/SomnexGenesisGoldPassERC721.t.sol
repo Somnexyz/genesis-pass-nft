@@ -11,38 +11,38 @@ import "../src/SomnexGenesisGoldPassERC721.sol";
 contract SomnexGenesisGoldPassERC721Test is Test {
     SomnexGenesisGoldPassERC721 public goldPass;
     SomnexGenesisPassManager public passManager;
-    MintableERC20 public weth;
+    MintableERC20 public paymentToken;
     address public teamWallet = address(0x456);
     address public user = address(0x789);
 
     function setUp() public {
         // Deploy the pass manager first
         passManager = new SomnexGenesisPassManager();
-        weth = new MintableERC20("Wrapped Ether", "WETH");
+        paymentToken = new MintableERC20("Payment Token", "PAY");
 
         // Deploy the Gold Pass contract with the pass manager
         goldPass = new SomnexGenesisGoldPassERC721(
-            address(weth),
+            address(paymentToken),
             teamWallet,
             address(passManager)
         );
 
         // Fund the user account with some WETH (mock)
         vm.deal(user, 10 ether);
-        weth.mint(user, 10000 ether); // Mint some WETH to the user for testing
+        paymentToken.mint(user, 10000 ether); // Mint some payment tokens to the user for testing
     }
 
     // function testMintValidToken() public {
     //     uint256 tokenId = 1;
 
     //     // Record the initial balance of the team wallet
-    //     uint256 initialTeamBalance = weth.balanceOf(teamWallet);
+    //     uint256 initialTeamBalance = paymentToken.balanceOf(teamWallet);
     //     // Get the mint price from the pass manager
     //     uint256 mintPrice = passManager.getMintPrice(1); // 1 = Gold
 
     //     // Mint a token from the user account
     //     vm.prank(user);
-    //     weth.approve(address(goldPass), mintPrice);
+    //     paymentToken.approve(address(goldPass), mintPrice);
     //     vm.prank(user);
     //     goldPass.mint(tokenId);
 
@@ -57,7 +57,7 @@ contract SomnexGenesisGoldPassERC721Test is Test {
     //     assertEq(goldPass.totalSupply(), 1, "Total supply should be 1");
 
     //     // Verify the team wallet received the mint price
-    //     assertEq(weth.balanceOf(teamWallet), initialTeamBalance + mintPrice, "Team wallet should receive mint price");
+    //     assertEq(paymentToken.balanceOf(teamWallet), initialTeamBalance + mintPrice, "Team wallet should receive mint price");
     // }
 
     // function testMintInvalidTokenId() public {
@@ -77,7 +77,7 @@ contract SomnexGenesisGoldPassERC721Test is Test {
     //     // Mint the token for the first time
     //     vm.prank(user);
 
-    //     weth.approve(address(goldPass), mintPrice);
+    //     paymentToken.approve(address(goldPass), mintPrice);
     //     vm.prank(user);
     //     goldPass.mint(tokenId);
 
@@ -95,7 +95,7 @@ contract SomnexGenesisGoldPassERC721Test is Test {
         uint256 mintPrice = passManager.getMintPrice(1); // 1 = Gold
         uint256 totalPrice = mintPrice * maxSupply;
         vm.prank(user);
-        weth.approve(address(goldPass), totalPrice);
+        paymentToken.approve(address(goldPass), totalPrice);
         vm.prank(user);
         goldPass.buy(maxSupply);
 
