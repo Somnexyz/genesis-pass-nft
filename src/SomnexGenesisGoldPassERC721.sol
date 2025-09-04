@@ -8,8 +8,10 @@ import "@openzeppelin/contracts/interfaces/IERC1155.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./interfaces/IGenesisERC721.sol";
 import "./SomnexGenesisPassManager.sol";
-contract SomnexGenesisGoldPassERC721 is ERC721Enumerable, ReentrancyGuard {
+contract SomnexGenesisGoldPassERC721 is ERC721Enumerable, ReentrancyGuard, IGenesisERC721 {
+    string private _baseURI;
     IERC20 public paymentToken; // Payment token address
     uint8 public constant PASS_TYPE = 1; // 1 = Gold
     SomnexGenesisPassManager private passManager;
@@ -44,9 +46,14 @@ contract SomnexGenesisGoldPassERC721 is ERC721Enumerable, ReentrancyGuard {
         return passManager.getMaxSupply(PASS_TYPE);
     }
 
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+    function setBaseURI(string memory baseURI_) external override {
+        require(msg.sender == address(passManager), "Only manager can set base URI");
+        _baseURI = baseURI_;
+    }
+
+    function tokenURI(uint256 tokenId) public view override(ERC721, IGenesisERC721) returns (string memory) {
         require(_ownerOf(tokenId) != address(0), "ERC721Metadata: URI query for nonexistent token");
-        return "ipfs://bafkreifugmd5ong6mlbfjrcmehgbm2tmv6kce32t75ythz47trovsl5qwi";
+        return bytes(_baseURI).length > 0 ? string(abi.encodePacked(_baseURI)) : "";
     }
     
 }

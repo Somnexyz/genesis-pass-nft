@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "./interfaces/IGenesisERC721.sol";
 
 /**
  * @title SomnexGenesisPassManager
@@ -142,5 +143,9 @@ contract SomnexGenesisPassManager is Ownable2Step {
         });
         emit MintPriceUpdated(passType, price);
         emit MaxSupplyUpdated(passType, maxSupply);
+    }
+
+    function setBaseURI(address nftContract, string memory baseURI) external onlyOwner {
+        IGenesisERC721(nftContract).setBaseURI(baseURI);
     }
 }
