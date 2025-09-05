@@ -11,7 +11,7 @@ import "./interfaces/IGenesisERC721.sol";
 import "./SomnexGenesisPassManager.sol";
 
 contract SomnexGenesisSilverPassERC721 is ERC721Enumerable, ReentrancyGuard, IGenesisERC721 {
-    string private _baseURI;
+    string private _baseURIExtended;
     IERC20 public paymentToken; // Payment token address
     uint8 public constant PASS_TYPE = 0; // 0 = Silver
     SomnexGenesisPassManager private passManager;
@@ -48,11 +48,11 @@ contract SomnexGenesisSilverPassERC721 is ERC721Enumerable, ReentrancyGuard, IGe
     
     function setBaseURI(string memory baseURI_) external {
         require(msg.sender == address(passManager), "Only manager can set base URI");
-        _baseURI = baseURI_;
+        _baseURIExtended = baseURI_;
     }
 
     function tokenURI(uint256 tokenId) public view override(ERC721, IGenesisERC721) returns (string memory) {
         require(_ownerOf(tokenId) != address(0), "ERC721Metadata: URI query for nonexistent token");
-        return bytes(_baseURI).length > 0 ? string(abi.encodePacked(_baseURI)) : "";
+        return bytes(_baseURIExtended).length > 0 ? string(abi.encodePacked(_baseURIExtended)) : "";
     }
 }
